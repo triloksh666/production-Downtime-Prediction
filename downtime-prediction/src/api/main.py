@@ -4,7 +4,7 @@ Provides endpoints for telemetry, predictions, alerts, and line control.
 """
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import os
@@ -18,7 +18,7 @@ app = FastAPI(
 )
 
 app.add_middleware(
-    CORSMSMiddleware,
+    CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
