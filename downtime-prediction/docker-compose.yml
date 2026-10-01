@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # HiveMQ Community Edition MQTT Broker
+  hivemq:
+    image: hivemq/hivemq-ce:latest
+    container_name: hivemq-broker
+    ports:
+      - "1883:1883"   # MQTT TCP
+      - "8000:8000"   # MQTT WebSocket
+      - "8080:8080"   # HiveMQ Control Center
+    environment:
+      - HIVEMQ_ALLOW_ALL_CLIENTS=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 1883 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Ingestion Service: Subscribes to MQTT telemetry & writes to SQLite
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.ingestion.subscriber
+    volumes:
+      - ./data:/app/data
+    environment:
+      - BROKER_MODE=local
+      - BROKER_HOST=hivemq
+      - BROKER_PORT=1883
+      - DB_PATH=/app/data/factory.db
+    depends_on:
+      hivemq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Real-time ML Inference Service
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.ml.predict
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - BROKER_MODE=local
+      - BROKER_HOST=hivemq
+      - BROKER_PORT=1883
+      - DB_PATH=/app/data/factory.db
+      - MODEL_PATH=/app/models/latest_model.joblib
+    depends_on:
+      hivemq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Alert Engine: Evaluates predictions & hard limits, publishes alerts
+  alerts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.alerts.engine
+    volumes:
+      - ./data:/app/data
+    environment:
+      - BROKER_MODE=local
+      - BROKER_HOST=hivemq
+      - BROKER_PORT=1883
+      - DB_PATH=/app/data/factory.db
+    depends_on:
+      hivemq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # REST API Service (FastAPI)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - DB_PATH=/app/data/factory.db
+    restart: unless-stopped
+
+  # Streamlit Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - BROKER_HOST=hivemq
+      - BROKER_PORT=1883
+      - DB_PATH=/app/data/factory.db
+    depends_on:
+      - hivemq
+    restart: unless-stopped

@@ -1,0 +1,108 @@
+production_line:
+  name: "Line 1 - Precision Metal Forming & Assembly"
+  code: "line1"
+  shift_hours:
+    shift_1: [6, 14]   # Morning: 06:00 - 14:00
+    shift_2: [14, 22]  # Evening: 14:00 - 22:00
+    shift_3: [22, 6]   # Night:   22:00 - 06:00
+
+machines:
+  - id: "cut_01"
+    name: "Cutting Machine"
+    type: "hydraulic_shear"
+    position: 1
+    install_date: "2023-01-15"
+    criticality: "HIGH"
+    nominal:
+      temperature: 52.0
+      vibration: 1.8
+      motor_current: 18.5
+      pressure: 8.2
+      rpm: 1200
+      power_kw: 14.5
+      cycle_time: 3.8
+    tolerances:
+      temp_max: 85.0
+      vib_max: 5.5
+      current_max: 30.0
+      pressure_min: 5.0
+
+  - id: "cnc_01"
+    name: "CNC Milling"
+    type: "5_axis_milling"
+    position: 2
+    install_date: "2022-11-20"
+    criticality: "CRITICAL"
+    nominal:
+      temperature: 64.0
+      vibration: 2.1
+      motor_current: 24.0
+      pressure: 6.5
+      rpm: 4800
+      power_kw: 22.0
+      cycle_time: 8.5
+    tolerances:
+      temp_max: 90.0
+      vib_max: 6.0
+      current_max: 40.0
+      pressure_min: 4.8
+
+  - id: "weld_01"
+    name: "Welding Robot"
+    type: "robotic_arm_mig"
+    position: 3
+    install_date: "2023-05-10"
+    criticality: "HIGH"
+    nominal:
+      temperature: 58.0
+      vibration: 1.4
+      motor_current: 15.0
+      pressure: 7.0
+      rpm: 900
+      power_kw: 18.0
+      cycle_time: 5.2
+    tolerances:
+      temp_max: 88.0
+      vib_max: 4.5
+      current_max: 28.0
+      pressure_min: 5.2
+
+  - id: "paint_01"
+    name: "Painting Booth"
+    type: "electrostatic_spray"
+    position: 4
+    install_date: "2022-08-01"
+    criticality: "MEDIUM"
+    nominal:
+      temperature: 45.0
+      vibration: 0.9
+      motor_current: 12.0
+      pressure: 5.8
+      rpm: 750
+      power_kw: 9.5
+      cycle_time: 12.0
+    tolerances:
+      temp_max: 75.0
+      vib_max: 3.5
+      current_max: 20.0
+      pressure_min: 4.0
+
+  - id: "pack_01"
+    name: "Packaging Unit"
+    type: "automated_cartoner"
+    position: 5
+    install_date: "2023-09-12"
+    criticality: "MEDIUM"
+    nominal:
+      temperature: 42.0
+      vibration: 1.2
+      motor_current: 9.5
+      pressure: 6.0
+      rpm: 1100
+      power_kw: 7.2
+      cycle_time: 2.5
+    tolerances:
+      temp_max: 70.0
+      vib_max: 4.0
+      current_max: 18.0
+      pressure_min: 4.5

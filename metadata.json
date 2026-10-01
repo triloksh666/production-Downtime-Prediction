@@ -1,0 +1,6 @@
+{
+  "name": "Smart Production-Line Downtime Prediction",
+  "description": "Industrial IoT & ML predictive maintenance platform with digital twin line visualization, HiveMQ MQTT telemetry, real-time failure prediction, and automated downtime alerting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
